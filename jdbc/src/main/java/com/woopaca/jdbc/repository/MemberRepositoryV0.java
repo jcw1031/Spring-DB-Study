@@ -9,6 +9,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.NoSuchElementException;
 
 
 /**
@@ -18,12 +19,17 @@ import java.sql.Statement;
 public class MemberRepositoryV0 {
 
     public Member save(Member member) throws SQLException {
+        String sql = "INSERT INTO member(member_id, money) VALUES (?, ?)";
+
         Connection connection = null;
         PreparedStatement preparedStatement = null;
 
         try {
             connection = getConnection();
-            preparedStatement = executeSaveMemberQuery(connection, member);
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, member.getMemberId());
+            preparedStatement.setInt(2, member.getMoney());
+            preparedStatement.executeUpdate();
             return member;
         } catch (SQLException e) {
             log.error("db error", e);
@@ -33,14 +39,29 @@ public class MemberRepositoryV0 {
         }
     }
 
-    private PreparedStatement executeSaveMemberQuery(Connection connection, Member member) throws SQLException {
-        String sql = "INSERT INTO member(member_id, money) VALUES (?, ?)";
+    public Member findById(String memberId) throws SQLException {
+        String sql = "SELECT * FROM member WHERE member_id = ?";
 
-        PreparedStatement preparedStatement = connection.prepareStatement(sql);
-        preparedStatement.setString(1, member.getMemberId());
-        preparedStatement.setInt(2, member.getMoney());
-        preparedStatement.executeUpdate();
-        return preparedStatement;
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+
+        try {
+            connection = getConnection();
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, memberId);
+            resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                return new Member(resultSet.getString("member_id"), resultSet.getInt("money"));
+            } else {
+                throw new NoSuchElementException("member not found (memberId = " + memberId + ")");
+            }
+        } catch (SQLException e) {
+            log.error("db error", e);
+            throw e;
+        } finally {
+            close(connection, preparedStatement, resultSet);
+        }
     }
 
     private void close(Connection connection, Statement statement, ResultSet resultSet) {

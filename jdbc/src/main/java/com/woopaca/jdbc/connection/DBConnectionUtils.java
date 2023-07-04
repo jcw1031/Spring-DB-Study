@@ -6,7 +6,9 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-import static com.woopaca.jdbc.connection.ConnectionConst.*;
+import static com.woopaca.jdbc.connection.ConnectionConst.PASSWORD;
+import static com.woopaca.jdbc.connection.ConnectionConst.URL;
+import static com.woopaca.jdbc.connection.ConnectionConst.USERNAME;
 
 @Slf4j
 public class DBConnectionUtils {

@@ -110,6 +110,25 @@ public class MemberRepositoryV1 {
         }
     }
 
+    public void clear() throws SQLException {
+        String sql = "DELETE FROM member";
+
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+
+        try {
+            connection = getConnection();
+            preparedStatement = connection.prepareStatement(sql);
+            int resultSize = preparedStatement.executeUpdate();
+            log.info("resultSize = {}", resultSize);
+        } catch (SQLException e) {
+            log.error("db error", e);
+            throw e;
+        } finally {
+            close(connection, preparedStatement, null);
+        }
+    }
+
     private void close(Connection connection, Statement statement, ResultSet resultSet) {
         JdbcUtils.closeResultSet(resultSet);
         JdbcUtils.closeStatement(statement);

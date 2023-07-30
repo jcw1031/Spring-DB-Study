@@ -1,7 +1,8 @@
 package com.woopaca.jdbc.service;
 
 import com.woopaca.jdbc.domain.Member;
-import com.woopaca.jdbc.repository.MemberRepositoryV1;
+import com.woopaca.jdbc.repository.MemberRepositoryV2;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -16,21 +17,22 @@ import static com.woopaca.jdbc.connection.ConnectionConst.USERNAME;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@DisplayName("기본 동작, 트랜잭션이 없어서 문제가 발생한다.")
-class MemberServiceV1Test {
+@Slf4j
+@DisplayName("트랜잭션 - 커넥션 파라미터 전달 방식 동기화")
+class MemberServiceV2Test {
 
     private static final String MEMBER_A = "memberA";
     private static final String MEMBER_B = "memberB";
     private static final String MEMBER_EX = "ex";
 
-    MemberRepositoryV1 memberRepository;
-    MemberServiceV1 memberService;
+    MemberRepositoryV2 memberRepository;
+    MemberServiceV2 memberService;
 
     @BeforeEach
     void beforeEach() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource(URL, USERNAME, PASSWORD);
-        memberRepository = new MemberRepositoryV1(dataSource);
-        memberService = new MemberServiceV1(memberRepository);
+        memberRepository = new MemberRepositoryV2(dataSource);
+        memberService = new MemberServiceV2(dataSource, memberRepository);
     }
 
     @AfterEach
@@ -48,7 +50,9 @@ class MemberServiceV1Test {
         memberRepository.save(memberB);
 
         // when
+        log.info("START TX");
         memberService.accountTransfer(memberA.getMemberId(), memberB.getMemberId(), 2000);
+        log.info("END TX");
 
         // then
         Member findMemberA = memberRepository.findById(memberA.getMemberId());
@@ -74,7 +78,7 @@ class MemberServiceV1Test {
         // then
         Member findMemberA = memberRepository.findById(memberA.getMemberId());
         Member findMemberB = memberRepository.findById(memberB.getMemberId());
-        assertThat(findMemberA.getMoney()).isEqualTo(8_000);
+        assertThat(findMemberA.getMoney()).isEqualTo(10_000);
         assertThat(findMemberB.getMoney()).isEqualTo(10_000);
     }
 }

@@ -61,9 +61,3 @@ public class MemberServiceV2 {
         }
     }
 }
-
-@FunctionalInterface
-interface BusinessLogic<T> {
-
-    void doing(T t) throws Exception;
-}

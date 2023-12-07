@@ -20,8 +20,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @Slf4j
-@DisplayName("트랜잭션 - TransactionManager를 사용한 트랜잭션 동기화")
-class MemberServiceV3_1Test {
+@DisplayName("트랜잭션 - TransactionTemplate 사용")
+class MemberServiceV3_2Test {
 
     private static final String MEMBER_A = "memberA";
     private static final String MEMBER_B = "memberB";
@@ -29,14 +29,14 @@ class MemberServiceV3_1Test {
 
 
     MemberRepositoryV3 memberRepository;
-    MemberServiceV3_1 memberService;
+    MemberServiceV3_2 memberService;
 
     @BeforeEach
     void beforeEach() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource(URL, USERNAME, PASSWORD);
         memberRepository = new MemberRepositoryV3(dataSource);
         PlatformTransactionManager transactionManager = new DataSourceTransactionManager(dataSource);
-        memberService = new MemberServiceV3_1(transactionManager, memberRepository);
+        memberService = new MemberServiceV3_2(transactionManager, memberRepository);
     }
 
     @AfterEach

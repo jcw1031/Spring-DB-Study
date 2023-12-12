@@ -19,6 +19,17 @@ public class MemberServiceV2 {
     private final DataSource dataSource;
     private final MemberRepositoryV2 memberRepository;
 
+    public void accountTransfer(String fromId, String toId, int money) throws SQLException {
+        executeLogic((connection) -> {
+            Member fromMember = memberRepository.findById(connection, fromId);
+            Member toMember = memberRepository.findById(connection, toId);
+
+            memberRepository.update(connection, fromId, fromMember.getMoney() - money);
+            validation(toMember);
+            memberRepository.update(connection, toId, toMember.getMoney() + money);
+        });
+    }
+
     private void executeLogic(BusinessLogic<Connection> logic) throws SQLException {
         Connection connection = dataSource.getConnection();
         try {
@@ -31,17 +42,6 @@ public class MemberServiceV2 {
         } finally {
             release(connection);
         }
-    }
-
-    public void accountTransfer(String fromId, String toId, int money) throws SQLException {
-        executeLogic((connection) -> {
-            Member fromMember = memberRepository.findById(connection, fromId);
-            Member toMember = memberRepository.findById(connection, toId);
-
-            memberRepository.update(connection, fromId, fromMember.getMoney() - money);
-            validation(toMember);
-            memberRepository.update(connection, toId, toMember.getMoney() + money);
-        });
     }
 
     private void validation(Member toMember) {

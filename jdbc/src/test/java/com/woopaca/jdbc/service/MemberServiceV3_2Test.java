@@ -27,7 +27,6 @@ class MemberServiceV3_2Test {
     private static final String MEMBER_B = "memberB";
     private static final String MEMBER_EX = "ex";
 
-
     MemberRepositoryV3 memberRepository;
     MemberServiceV3_2 memberService;
 

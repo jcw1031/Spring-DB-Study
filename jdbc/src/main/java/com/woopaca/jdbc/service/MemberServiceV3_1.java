@@ -18,6 +18,17 @@ public class MemberServiceV3_1 {
     private final PlatformTransactionManager transactionManager;
     private final MemberRepositoryV3 memberRepository;
 
+    public void accountTransfer(String fromId, String toId, int money) {
+        executeLogic(() -> {
+            Member fromMember = memberRepository.findById(fromId);
+            Member toMember = memberRepository.findById(toId);
+
+            memberRepository.update(fromId, fromMember.getMoney() - money);
+            validation(toMember);
+            memberRepository.update(toId, toMember.getMoney() + money);
+        });
+    }
+
     private void executeLogic(BusinessLogic2 logic) {
         // 트랜잭션 시작
         TransactionStatus transactionStatus = transactionManager.getTransaction(new DefaultTransactionDefinition());
@@ -28,17 +39,6 @@ public class MemberServiceV3_1 {
             transactionManager.rollback(transactionStatus);
             throw new IllegalStateException(e);
         }
-    }
-
-    public void accountTransfer(String fromId, String toId, int money) {
-        executeLogic(() -> {
-            Member fromMember = memberRepository.findById(fromId);
-            Member toMember = memberRepository.findById(toId);
-
-            memberRepository.update(fromId, fromMember.getMoney() - money);
-            validation(toMember);
-            memberRepository.update(toId, toMember.getMoney() + money);
-        });
     }
 
     private void validation(Member toMember) {

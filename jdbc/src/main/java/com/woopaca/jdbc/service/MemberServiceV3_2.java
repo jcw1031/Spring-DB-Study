@@ -23,17 +23,6 @@ public class MemberServiceV3_2 {
         this.memberRepository = memberRepository;
     }
 
-    private void executeLogic(BusinessLogic2 logic) {
-        transactionTemplate.executeWithoutResult(transactionStatus -> {
-            // 람다에서 체크 예외를 밖으로 던질 수 없어 try-catch 사용
-            try {
-                logic.doing();
-            } catch (SQLException e) {
-                throw new IllegalStateException(e);
-            }
-        });
-    }
-
     public void accountTransfer(String fromId, String toId, int money) {
         executeLogic(() -> {
             Member fromMember = memberRepository.findById(fromId);
@@ -42,6 +31,17 @@ public class MemberServiceV3_2 {
             memberRepository.update(fromId, fromMember.getMoney() - money);
             validation(toMember);
             memberRepository.update(toId, toMember.getMoney() + money);
+        });
+    }
+
+    private void executeLogic(BusinessLogic2 logic) {
+        transactionTemplate.executeWithoutResult(transactionStatus -> {
+            // 람다에서 체크 예외를 밖으로 던질 수 없어 try-catch 사용
+            try {
+                logic.doing();
+            } catch (SQLException e) {
+                throw new IllegalStateException(e);
+            }
         });
     }
 

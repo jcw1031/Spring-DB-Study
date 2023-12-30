@@ -15,7 +15,6 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 
 import javax.sql.DataSource;
-import java.sql.SQLException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -72,7 +71,7 @@ class MemberServiceV4Test {
 
     @DisplayName("정상 이체")
     @Test
-    void accountTransfer() throws SQLException {
+    void accountTransfer() {
         // given
         Member memberA = new Member(MEMBER_A, 10_000);
         Member memberB = new Member(MEMBER_B, 10_000);
@@ -93,7 +92,7 @@ class MemberServiceV4Test {
 
     @DisplayName("이체 중 예외 발생")
     @Test
-    void accountTransferEx() throws SQLException {
+    void accountTransferEx() {
         // given
         Member memberA = new Member(MEMBER_A, 10_000);
         Member memberB = new Member(MEMBER_EX, 10_000);

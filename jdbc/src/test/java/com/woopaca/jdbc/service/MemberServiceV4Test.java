@@ -2,7 +2,7 @@ package com.woopaca.jdbc.service;
 
 import com.woopaca.jdbc.domain.Member;
 import com.woopaca.jdbc.repository.MemberRepository;
-import com.woopaca.jdbc.repository.MemberRepositoryV4_2;
+import com.woopaca.jdbc.repository.MemberRepositoryV5;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
@@ -44,7 +44,8 @@ class MemberServiceV4Test {
 
         @Bean
         MemberRepository memberRepository() {
-            return new MemberRepositoryV4_2(dataSource);
+//            return new MemberRepositoryV4_2(dataSource);
+            return new MemberRepositoryV5(dataSource);
         }
 
         @Bean
